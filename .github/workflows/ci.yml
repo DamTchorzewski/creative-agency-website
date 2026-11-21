@@ -1,0 +1,118 @@
+# CI: the quality gate. Formatting, lint, types, unit tests and a dependency audit, then the end-to-end tests
+# (Playwright + axe-core, desktop + mobile, light + dark, reduced motion) against the production build served locally.
+#
+# Triggers: every pull request, manual run, and `workflow_call`. No `push` trigger: a branch with a pull request
+# would be checked twice. main and develop are checked by Build & Deploy (on push), which calls this workflow first.
+# Before a PR, run `pnpm check` locally.
+# Secrets: none (the site has no backend and calls no external service; fork PRs can run it).
+# Standard: reops/standards/workflows.md (global, outside this repo)
+
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    # A change that cannot break the code does not start the checks.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - "**/.env.example"
+      - ".github/dependabot.yml"
+      - ".scratch/**"
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      # The caller sets it: e2e runs on the pull request and on main; the push to develop repeats a commit
+      # that has already passed it.
+      e2e:
+        type: boolean
+        default: true
+
+concurrency:
+  # A newer push to the same branch makes the running check pointless. When another workflow calls
+  # this one, `github.workflow` is the caller's name: those runs are never cancelled from here.
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.workflow == 'CI' }}
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Format, lint, types, unit tests, audit
+    if: ${{ github.event.pull_request.draft != true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      # Production dependencies only: the site is static, dev tooling never reaches visitors.
+      - name: Audit
+        run: pnpm audit --prod --audit-level=high
+
+  e2e:
+    name: End-to-end (desktop + mobile, WCAG 2.2 AA, CSP)
+    # In a called workflow github.event_name is the caller's event (push), never workflow_call, so the input decides
+    # whenever the run is not a pull request or a manual run of CI itself.
+    if: ${{ github.event.pull_request.draft != true && (github.event_name == 'pull_request' || github.workflow == 'CI' || inputs.e2e) }}
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Playwright (Chromium)
+        run: pnpm exec playwright install --with-deps chromium
+
+      # playwright.config.ts builds the site and serves it (webServer).
+      - name: Run e2e tests
+        run: pnpm test:e2e
+
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

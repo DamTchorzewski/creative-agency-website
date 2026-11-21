@@ -1,0 +1,31 @@
+---
+// A heading whose words rise into place with CSS only (no JavaScript), so the first screen paints at once. Split at
+// build time; the word given as `emphasis` is set in the italic serif.
+interface Props {
+  text: string;
+  emphasis?: string;
+  accent?: boolean;
+}
+
+const { text, emphasis, accent = false } = Astro.props;
+const words = text.split(" ");
+---
+
+<span class="rise">
+  {words.map((word, i) => (
+    <>
+      <span class="rw">
+        <span
+          class:list={[
+            "rw-i",
+            word === emphasis && "serif",
+            word === emphasis && accent && "accent",
+          ]}
+        >
+          {word}
+        </span>
+      </span>
+      {i < words.length - 1 ? " " : ""}
+    </>
+  ))}
+</span>

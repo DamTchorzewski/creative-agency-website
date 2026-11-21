@@ -1,0 +1,54 @@
+---
+import { Picture } from "astro:assets";
+
+import studioTall from "@/assets/studio/studio-tall.jpg";
+import studioWide from "@/assets/studio/studio-wide.jpg";
+import { manifesto } from "@/data/site";
+
+const words = manifesto.split(" ");
+---
+
+<section id="manifest" class="section" aria-labelledby="manifest-title">
+  <div class="wrap">
+    <h2 id="manifest-title" class="eyebrow">
+      Kim jesteśmy
+    </h2>
+    <p class="manifesto-text mt-8 max-w-[22ch] sm:max-w-[26ch]" data-manifesto>
+      {words.map((word, i) => (
+        <>
+          <span class="word">{word}</span>
+          {i < words.length - 1 ? " " : ""}
+        </>
+      ))}
+    </p>
+
+    <figure class="studio mt-16 lg:mt-24" data-studio>
+      <Picture
+        src={studioWide}
+        formats={["avif", "webp"]}
+        widths={[960, 1600, 2400]}
+        sizes="(min-width: 90rem) 86rem, calc(100vw - 2 * var(--gutter))"
+        alt="Zespół Nord Studio przy wspólnym stole w biurze, nad projektem na monitorze"
+        loading="lazy"
+        class="hidden md:block"
+        data-studio-img
+      />
+      <Picture
+        src={studioTall}
+        formats={["avif", "webp"]}
+        widths={[480, 960, 1440]}
+        sizes="calc(100vw - 2rem)"
+        alt="Zespół Nord Studio przy wspólnym stole w biurze"
+        loading="lazy"
+        class="md:hidden"
+        data-studio-img
+      />
+      <figcaption class="studio-caption">
+        <span class="max-w-md text-lg leading-snug font-medium tracking-tight sm:text-2xl">
+          Jedno biuro, jeden zespół. Projektanci i programiści siedzą przy tym samym stole.
+        </span>
+        <span class="text-sm opacity-80">Warszawa, Aleje Jerozolimskie 21</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>

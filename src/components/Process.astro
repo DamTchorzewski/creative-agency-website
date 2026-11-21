@@ -1,0 +1,45 @@
+---
+import { processSteps } from "@/data/site";
+---
+
+<section
+  id="proces"
+  class="section overflow-clip bg-bg-2"
+  aria-labelledby="process-title"
+  data-process
+>
+  <div class="wrap">
+    <div class="mb-12 grid gap-6 md:grid-cols-[1fr_auto] md:items-end lg:mb-16">
+      <div>
+        <p class="eyebrow">Proces</p>
+        <h2 id="process-title" class="display h-section mt-5" data-split>
+          Od pomysłu <span class="serif">do wyniku</span>
+        </h2>
+      </div>
+      <p class="lead max-w-sm" data-reveal>
+        Cztery etapy, jasne terminy i cotygodniowe demo. Zawsze wiecie, na czym stoimy.
+      </p>
+    </div>
+    <div data-process-viewport>
+      <ol class="process-track" data-process-track>
+        {processSteps.map((step, i) => (
+          <li class="process-step" data-reveal>
+            <span class="big-num" aria-hidden="true">
+              0{i + 1}
+            </span>
+            <h3 class="mt-auto text-3xl font-medium tracking-[-0.04em]">
+              <span class="sr-only">Etap {i + 1}: </span>
+              {step.title}
+            </h3>
+            <p class="text-muted">{step.text}</p>
+            <ul class="flex flex-wrap gap-2">
+              {step.tags.map((tag) => (
+                <li class="chip">{tag}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

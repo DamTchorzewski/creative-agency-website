@@ -1,0 +1,49 @@
+---
+import ProjectCard from "@/components/ProjectCard.astro";
+import { categories, projects } from "@/data/site";
+import { filterProjects, projectCount } from "@/lib/projects";
+
+const filters = [
+  { id: "all", label: "Wszystkie", count: projects.length },
+  ...categories.map((c) => ({ ...c, count: filterProjects(projects, c.id).length })),
+];
+---
+
+<section id="realizacje" class="section" aria-labelledby="work-title">
+  <div class="wrap">
+    <div class="mb-10 grid gap-8 lg:mb-16 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="eyebrow">Realizacje</p>
+        <h2 id="work-title" class="display h-section mt-5" data-split>
+          Wybrane <span class="serif">projekty</span>
+        </h2>
+      </div>
+      <div
+        role="group"
+        aria-label="Filtruj projekty według kategorii"
+        class="flex flex-wrap gap-2"
+        data-filters
+      >
+        {filters.map((filter) => (
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter={filter.id}
+            aria-pressed={filter.id === "all" ? "true" : "false"}
+          >
+            {filter.label}
+            <sup aria-hidden="true">{filter.count}</sup>
+          </button>
+        ))}
+      </div>
+    </div>
+    <p class="sr-only" aria-live="polite" data-filter-status>
+      Pokazano {projectCount(projects.length)}
+    </p>
+    <ul class="work-grid" data-work-grid>
+      {projects.map((project) => (
+        <ProjectCard project={project} />
+      ))}
+    </ul>
+  </div>
+</section>
