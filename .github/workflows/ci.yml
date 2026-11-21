@@ -75,7 +75,9 @@ jobs:
 
   e2e:
     name: End-to-end (desktop + mobile, WCAG 2.2 AA, CSP)
-    if: ${{ github.event.pull_request.draft != true && (github.event_name != 'workflow_call' || inputs.e2e) }}
+    # In a called workflow github.event_name is the caller's event (push), never workflow_call, so the input decides
+    # whenever the run is not a pull request or a manual run of CI itself.
+    if: ${{ github.event.pull_request.draft != true && (github.event_name == 'pull_request' || github.workflow == 'CI' || inputs.e2e) }}
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 30
