@@ -1,0 +1,60 @@
+---
+import ContactForm from "@/components/ContactForm.astro";
+import Icon from "@/components/Icon.astro";
+import { contact } from "@/data/site";
+---
+
+<section id="kontakt" class="section" aria-labelledby="contact-title">
+  <div class="wrap">
+    <div class="rounded-(--radius-lg) border border-line bg-bg-2 p-6 sm:p-10 lg:p-16">
+      <p class="eyebrow">Kontakt</p>
+      <h2 id="contact-title" class="display h-section mt-5 max-w-[16ch]" data-split>
+        Porozmawiajmy o <span class="serif accent">Waszym</span> projekcie
+      </h2>
+      <div class="mt-12 grid gap-12 lg:mt-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <div class="grid content-start gap-8">
+          <p class="lead">
+            Zostawcie dane w formularzu, a w ciągu 24 godzin zadzwonimy, żeby porozmawiać o celach,
+            budżecie i terminie.
+          </p>
+          <ul class="grid gap-5">
+            <li>
+              <a class="group flex items-center gap-4" href={`mailto:${contact.email}`}>
+                <span class="icon-btn group-hover:border-ink">
+                  <Icon name="mail" />
+                </span>
+                <span>
+                  <span class="block text-sm text-muted">E-mail</span>
+                  <span class="link-underline text-lg font-medium">{contact.email}</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a class="group flex items-center gap-4" href={contact.phoneHref}>
+                <span class="icon-btn group-hover:border-ink">
+                  <Icon name="phone" />
+                </span>
+                <span>
+                  <span class="block text-sm text-muted">Telefon, {contact.hours}</span>
+                  <span class="link-underline text-lg font-medium">{contact.phone}</span>
+                </span>
+              </a>
+            </li>
+            <li class="flex items-center gap-4">
+              <span class="icon-btn">
+                <Icon name="pin" />
+              </span>
+              <span>
+                <span class="block text-sm text-muted">Biuro</span>
+                <span class="text-lg font-medium">
+                  {contact.street}, {contact.city}
+                </span>
+              </span>
+            </li>
+          </ul>
+        </div>
+        <ContactForm id="contact" />
+      </div>
+    </div>
+  </div>
+</section>

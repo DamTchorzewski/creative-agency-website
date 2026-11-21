@@ -1,0 +1,78 @@
+---
+// The page shell: head (SEO, theme without a flash, font preload), skip link, header, footer and the scripts.
+import "@fontsource-variable/geist/wght.css";
+import "@fontsource/instrument-serif/400-italic.css";
+import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
+import "@/styles/global.css";
+
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import OrderDialog from "@/components/OrderDialog.astro";
+import { brand } from "@/data/site";
+import { withBase } from "@/lib/url";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Section links in the header point at the home page from a sub-page. */
+  home?: boolean;
+}
+
+const { title, description = brand.description, home = true } = Astro.props;
+const pageTitle = title
+  ? `${title} · ${brand.name}`
+  : `${brand.name} · agencja kreatywna z Warszawy`;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const ogImage = Astro.site ? new URL(withBase("/og.png"), Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:site_name" content={brand.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0b0d13" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafc" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      // Apply a stored theme before the first paint (no flash). No stored value = follow the system.
+      try {
+        const t = localStorage.getItem("theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch {
+        /* storage blocked: follow the system */
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Przejdź do treści
+    </a>
+    <div class="progress" aria-hidden="true"></div>
+    <Header home={home} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer home={home} />
+    <OrderDialog />
+    <div class="grain" aria-hidden="true"></div>
+    <div class="cursor" aria-hidden="true">
+      <span>Zobacz</span>
+    </div>
+    <script>
+      import "@/scripts/main";
+    </script>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+---
+import Icon from "@/components/Icon.astro";
+import RiseText from "@/components/RiseText.astro";
+import { clients } from "@/data/site";
+
+const ringText = "Strategia • Design • Development • Rozwój • ";
+---
+
+<section class="hero" aria-labelledby="hero-title" data-hero>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="orb orb--1" aria-hidden="true" data-orb="1"></div>
+  <div class="orb orb--2" aria-hidden="true" data-orb="2"></div>
+  <div class="orb orb--3" aria-hidden="true" data-orb="3"></div>
+
+  <div class="wrap">
+    <p class="eyebrow" data-hero-fade>
+      Agencja kreatywna · Warszawa · od 2014
+    </p>
+    <h1 id="hero-title" class="display h-hero mt-6 max-w-[14ch] sm:max-w-none">
+      <RiseText text="Efektywne rozwiązania dla Waszego biznesu" emphasis="Waszego" accent />
+    </h1>
+
+    <div class="mt-10 grid items-end gap-10 md:grid-cols-[1fr_auto] lg:mt-14">
+      <div class="max-w-xl" data-hero-fade>
+        <p class="lead">
+          Projektujemy i budujemy strony, aplikacje i marki, które pracują na wynik. Strategia,
+          design i technologia w jednym zespole.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <button type="button" class="btn" data-open-order data-magnetic>
+            Zamów usługę <Icon name="arrow-right" />
+          </button>
+          <a class="btn btn--ghost" href="#realizacje" data-magnetic>
+            Zobacz realizacje
+          </a>
+        </div>
+      </div>
+
+      <a
+        href="#manifest"
+        class="orbit hidden justify-self-end md:grid"
+        data-hero-fade
+        data-magnetic
+      >
+        <span class="sr-only">Przewiń do kolejnej sekcji</span>
+        <svg class="orbit-text" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <path id="ring-path" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"></path>
+          </defs>
+          <text font-size="14" font-weight="500" fill="currentColor">
+            <textPath href="#ring-path" textLength="486" lengthAdjust="spacing">
+              {ringText.toUpperCase()}
+            </textPath>
+          </text>
+        </svg>
+        <span class="orbit-core">
+          <Icon name="arrow-down" />
+        </span>
+      </a>
+    </div>
+
+    <div
+      class="mt-14 flex items-center gap-4 border-t border-line pt-6 lg:mt-20"
+      data-hero-fade
+      data-marquee
+    >
+      <p class="flex-none text-sm text-muted">Zaufali nam</p>
+      <div class="marquee flex-1">
+        <ul class="marquee-track" aria-label="Klienci">
+          {[...clients, ...clients].map((name, i) => (
+            <li class="marquee-item" aria-hidden={i >= clients.length ? "true" : undefined}>
+              <Icon name="spark" />
+              {name}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <button
+        type="button"
+        class="icon-btn flex-none motion-reduce:hidden"
+        data-marquee-toggle
+        aria-pressed="false"
+      >
+        <Icon name="pause" class="pause-icon" />
+        <Icon name="play" class="play-icon" />
+        <span class="sr-only">Zatrzymaj animację logo klientów</span>
+      </button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,47 @@
+---
+import Icon from "@/components/Icon.astro";
+import ServiceArt from "@/components/ServiceArt.astro";
+import { services } from "@/data/site";
+---
+
+<section id="uslugi" class="section pt-0" aria-labelledby="services-title">
+  <div class="wrap">
+    <div class="mb-12 grid gap-6 md:grid-cols-[1fr_auto] md:items-end lg:mb-20">
+      <div>
+        <p class="eyebrow">Usługi</p>
+        <h2 id="services-title" class="display h-section mt-5" data-split>
+          Czym się <span class="serif">zajmujemy</span>
+        </h2>
+      </div>
+      <p class="lead max-w-sm" data-reveal>
+        Trzy specjalizacje, jeden zespół, który prowadzi projekt od pomysłu do wyniku.
+      </p>
+    </div>
+
+    <ol class="grid gap-6" data-services>
+      {services.map((service, i) => (
+        <li class="service-card" data-service-card>
+          <span class="service-dim" aria-hidden="true" data-service-dim />
+          <div class="flex flex-col">
+            <span class="num">
+              0{i + 1} / 0{services.length}
+            </span>
+            <h3 class="h-card mt-6 lg:mt-10">{service.title}</h3>
+            <p class="lead mt-5 max-w-md">{service.lead}</p>
+            <ul class="mt-8 flex flex-wrap gap-2 lg:mt-auto lg:pt-10">
+              {service.deliverables.map((item) => (
+                <li class="chip">
+                  <Icon name="check" class="mr-1.5 size-3.5 text-accent" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="service-art">
+            <ServiceArt art={service.art} />
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

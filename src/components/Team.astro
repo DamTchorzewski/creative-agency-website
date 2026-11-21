@@ -1,0 +1,42 @@
+---
+import { Image } from "astro:assets";
+
+import { team } from "@/data/site";
+---
+
+<section id="zespol" class="section" aria-labelledby="team-title">
+  <div class="wrap">
+    <div class="mb-12 grid gap-6 md:grid-cols-[1fr_auto] md:items-end lg:mb-16">
+      <div>
+        <p class="eyebrow">Zespół</p>
+        <h2 id="team-title" class="display h-section mt-5" data-split>
+          Ludzie <span class="serif">za projektami</span>
+        </h2>
+      </div>
+      <p class="lead max-w-sm" data-reveal>
+        Mały, zgrany zespół. Z każdym z nas porozmawiacie bezpośrednio, bez pośredników.
+      </p>
+    </div>
+  </div>
+  <div class="wrap px-0! lg:px-(--gutter)!">
+    <div class="team-track" role="region" aria-label="Członkowie zespołu" tabindex="0">
+      <ul class="team-list" data-team>
+        {team.map((member) => (
+          <li class="member" data-reveal>
+            <div class="member-photo">
+              <Image
+                src={member.photo}
+                widths={[400, 640, 900]}
+                sizes="(min-width: 64rem) 22vw, 78vw"
+                alt={member.alt}
+                loading="lazy"
+              />
+            </div>
+            <h3 class="mt-5 text-xl font-medium tracking-[-0.03em]">{member.name}</h3>
+            <p class="text-muted">{member.role}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
